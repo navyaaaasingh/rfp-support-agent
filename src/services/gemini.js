@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 const API_KEY = process.env.GEMINI_API_KEY;
 const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL || 'gemini-embedding-001';
-const GENERATION_MODEL = process.env.GENERATION_MODEL || 'gemini-3-flash';
+const GENERATION_MODEL = process.env.GENERATION_MODEL || 'gemini-flash-latest';
 const BASE_URL = 'https://generativelanguage.googleapis.com/v1beta';
 
 if (!API_KEY) {
