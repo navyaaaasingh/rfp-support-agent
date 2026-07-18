@@ -16,16 +16,18 @@ Built as a portfolio/college project — see `docs/design.md` (or the design doc
 ## Stack
 
 - **Backend:** Node.js + Express
-- **Vector store:** Postgres + `pgvector` (Supabase or Neon free tier — chosen over a local file store because Render's free tier wipes local disk on every redeploy)
-- **Embeddings + generation:** Google Gemini API (`gemini-embedding-001` + `gemini-2.5-flash`) — free tier, no credit card required
+- **Vector store:** Postgres + `pgvector` (Supabase or Neon free tier, connected via the transaction pooler — chosen over a local file store because Render's free tier wipes local disk on every redeploy)
+- **Embeddings + generation:** Google Gemini API (`gemini-embedding-001` for embeddings, `gemini-flash-latest` for generation — free tier, no credit card required)
 - **Frontend:** Plain HTML/CSS/JS review UI
+- **Deployed:** live on Render free tier
 
 ## Setup
 
-1. **Create the database.** Spin up a free Postgres instance on [Supabase](https://supabase.com) or [Neon](https://neon.tech), then run:
+1. **Create the database.** Spin up a free Postgres instance on [Supabase](https://supabase.com) or [Neon](https://neon.tech), then run `db/schema.sql` against it — either via `psql` or by pasting it into Supabase's SQL Editor:
    ```bash
    psql "$DATABASE_URL" -f db/schema.sql
    ```
+   Use the **transaction pooler** connection string (port `6543`), not the direct connection (port `5432`) — the direct string resolves to an IPv6-only host on some networks and on Render, which fails with `ENETUNREACH`.
 
 2. **Get a Gemini API key** at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) (free, no card needed).
 
@@ -71,6 +73,19 @@ Replace the placeholder entries in `eval/testset.json` with real question/source
 - Set `GEMINI_API_KEY` and `DATABASE_URL` as environment variables in the Render dashboard (don't commit `.env`).
 - Build command: `npm install` · Start command: `npm start`.
 - Note: the free web service spins down after inactivity — first request after idle will be slow, and the free Postgres instance may also need a moment to wake up.
+
+## Troubleshooting
+
+Issues actually hit while building and deploying this, kept here since they're likely to recur (especially the Gemini model churn):
+
+- **`ENETUNREACH` connecting to Postgres** — Supabase's direct connection string (port `5432`) resolves to an IPv6-only address, which fails on networks/hosts without outbound IPv6 (including Render). Fix: use the transaction pooler string (port `6543`) instead.
+- **`Error: Invalid URL` on `DATABASE_URL`** — usually a leftover `[YOUR-PASSWORD]` placeholder, or an unencoded special character (`@`, `#`, `/`, `:`) in the real password colliding with the URL's own delimiters. Fix: reset to an alphanumeric-only password, or URL-encode the special characters.
+- **`expected 768 dimensions, not 3072`** — `gemini-embedding-001` returns 3072-dim vectors by default; the `chunks.embedding` column is defined as `vector(768)`. Fix: pass `outputDimensionality: 768` in the embed request (already done in `src/services/gemini.js`) to match the schema, rather than migrating the column.
+- **`404 ... is no longer available to new users`** — Google has been retiring specific Gemini model IDs (e.g. `gemini-2.5-flash`) ahead of their own published deprecation dates, and preview-era names like `gemini-3-flash` don't map directly to the real model ID (`gemini-3-flash-preview`). Fix: use the `gemini-flash-latest` alias, which Google keeps pointed at their current recommended free Flash model, and confirm available model IDs for your account by calling `GET https://generativelanguage.googleapis.com/v1beta/models?key=YOUR_KEY` rather than assuming a name from docs or search results.
+
+## Alternative: splitting providers (Gemini embeddings + Groq generation)
+
+Groq offers a very fast, generous free tier for chat/generation, but doesn't currently expose an embeddings endpoint — so it can't fully replace Gemini here. If Gemini's generation side becomes unreliable again, `generateDraft` in `src/services/gemini.js` can be swapped to call Groq's OpenAI-compatible endpoint while `embedText`/`embedBatch` keep using Gemini. This is a reasonable extension to point to in an interview even if not implemented, since it demonstrates provider-agnostic design.
 
 ## Known limitations (V1)
 
