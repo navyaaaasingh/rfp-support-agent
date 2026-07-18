@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RFP / Support Agent</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>RFP &amp; Technical Support Draft Agent</h1>
+    <p class="subtitle">Ask a question, get a cited draft answer pulled from your ingested documents.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. Ingest a document</h2>
+      <form id="ingest-form">
+        <input type="file" id="file-input" name="file" accept=".pdf,.docx,.md,.txt,.csv" required />
+        <select id="source-type" name="sourceType" required>
+          <option value="" disabled selected>Source type</option>
+          <option value="faq">FAQ</option>
+          <option value="rfp_answer">Past RFP answer (CSV: question,answer)</option>
+          <option value="manual">Manual</option>
+        </select>
+        <button type="submit">Ingest</button>
+      </form>
+      <p id="ingest-status" class="status"></p>
+    </section>
+
+    <section class="card">
+      <h2>2. Ask a question</h2>
+      <form id="query-form">
+        <textarea id="question-input" placeholder="e.g. Does your platform support SSO?" required></textarea>
+        <button type="submit">Get draft answer</button>
+      </form>
+    </section>
+
+    <section class="card" id="result-card" hidden>
+      <h2>Draft answer</h2>
+      <div class="confidence-badge" id="confidence-badge"></div>
+      <p id="draft-answer"></p>
+      <h3>Sources</h3>
+      <ul id="sources-list"></ul>
+      <div class="review-actions">
+        <button id="approve-btn" class="approve">Approve</button>
+        <button id="edit-btn" class="edit">Edit</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

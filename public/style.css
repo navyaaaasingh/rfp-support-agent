@@ -1,0 +1,99 @@
+:root {
+  --bg: #0f1115;
+  --card: #171a21;
+  --border: #2a2e38;
+  --text: #e6e8eb;
+  --muted: #8a8f98;
+  --accent: #6c8cff;
+  --good: #3ecf8e;
+  --low: #e0a13d;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  padding: 2rem 1.5rem 1rem;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+h1 { margin: 0 0 0.25rem; font-size: 1.5rem; }
+.subtitle { color: var(--muted); margin: 0; }
+
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+}
+
+.card h2 { margin-top: 0; font-size: 1.05rem; }
+
+input[type='file'], select, textarea {
+  width: 100%;
+  padding: 0.6rem;
+  background: #0f1115;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  margin-bottom: 0.6rem;
+  font-family: inherit;
+}
+
+textarea { min-height: 80px; resize: vertical; }
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 0.55rem 1.1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button:hover { opacity: 0.9; }
+button:disabled { opacity: 0.5; cursor: default; }
+
+.status { color: var(--muted); font-size: 0.9rem; }
+
+.confidence-badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.confidence-badge.high { background: rgba(62,207,142,0.15); color: var(--good); }
+.confidence-badge.low { background: rgba(224,161,61,0.15); color: var(--low); }
+
+#draft-answer {
+  line-height: 1.5;
+  padding: 0.75rem;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+}
+
+#sources-list { color: var(--muted); font-size: 0.9rem; }
+
+.review-actions { display: flex; gap: 0.6rem; margin-top: 0.75rem; }
+.review-actions .edit { background: transparent; border: 1px solid var(--border); }
