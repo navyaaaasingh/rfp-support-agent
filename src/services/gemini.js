@@ -22,6 +22,9 @@ export async function embedText(text) {
       body: JSON.stringify({
         model: `models/${EMBEDDING_MODEL}`,
         content: { parts: [{ text }] },
+        // gemini-embedding-001 returns 3072 dims by default; truncate to
+        // 768 to match the pgvector column defined in db/schema.sql.
+        outputDimensionality: 768,
       }),
     }
   );
